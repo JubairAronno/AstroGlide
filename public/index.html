@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTROGLIDE — Explore the Cosmos</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="brand">
+            <img src="/images/logo.png" alt="logo">
+            ASTROGLIDE
+        </div>
+        <nav id="main-nav" aria-label="Main navigation">
+            <a href="#" data-page="home" class="active">Home</a>
+            <a href="#" data-page="explore">Explore</a>
+            <a href="#" data-page="fun">Fun Facts</a>
+            <a href="#" data-page="quiz">Quiz</a>
+        </nav>
+        <div style="display:flex;gap:12px;align-items:center">
+            <button class="cta" id="open-login">Login</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Home Page -->
+        <div class="hero-wrap" id="home-page" data-page="home">
+            <div class="stars" id="starsLayer"></div>
+            <div class="streaks" id="streakLayer"></div>
+            <div class="particles" id="particlesLayer"></div>
+
+            <div class="scene" role="region" aria-label="Welcome hero">
+                <div class="rings" aria-hidden="true"></div>
+
+                <div style="z-index:10;text-align:center;padding:28px">
+                    <div class="subtitle">Your Gateway to the Cosmos</div>
+                    <div class="logo-title">ASTROGLIDE</div>
+                    <p>Welcome to ASTROGLIDE — choose your path to begin your cosmic journey through the Solar System.</p>
+
+                    <div class="option-cards">
+                        <div class="option-card" id="guest-option">
+                            <div class="option-icon">🚀</div>
+                            <h3>Continue as Guest</h3>
+                            <p>Explore without an account</p>
+                        </div>
+                        <div class="option-card" id="register-option">
+                            <div class="option-icon">⭐</div>
+                            <h3>Register</h3>
+                            <p>Create a new account</p>
+                        </div>
+                        <div class="option-card" id="login-option">
+                            <div class="option-icon">🔐</div>
+                            <h3>Login</h3>
+                            <p>Access your account</p>
+                        </div>
+                    </div>
+
+                    <div class="info-row" style="justify-content:center">
+                        <div class="info-item">
+                            <div>🌍</div>
+                            <small class="muted">Explore 9 Celestial Bodies</small>
+                        </div>
+                        <div class="info-item">
+                            <div>🎮</div>
+                            <small class="muted">Interactive Quizzes</small>
+                        </div>
+                        <div class="info-item">
+                            <div>✨</div>
+                            <small class="muted">Fun Space Facts</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="orbit" aria-hidden="true">
+                    <div class="planet" title="glowing planet"></div>
+                </div>
+
+                <img src="/images/planet.png" style="position:absolute;left:6%;bottom:6%;width:160px;opacity:.14;filter:blur(6px);pointer-events:none" alt="" aria-hidden="true">
+            </div>
+
+            <div class="arrow" id="scrollDown" title="Scroll to explore"></div>
+        </div>
+
+        <!-- Explore Page -->
+        <section class="page" id="explore-page" style="display:none" data-page="explore">
+            <div class="floating-planet"></div>
+            <div class="floating-planet"></div>
+            <div class="floating-planet"></div>
+            <h1>Explore The Wonders of Our <span style="background:linear-gradient(90deg,var(--accent-b),var(--accent-a));-webkit-background-clip:text;background-clip:text;color:transparent">Solar System</span></h1>
+            <p class="muted">Discover the planets of our solar system with interactive 3D models</p>
+        </section>
+    </main>
+
+    <div class="modal-back" id="modalBack">
+        <div class="modal">
+            <div class="close-x" id="closeModal">✕</div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script src="/java.js"></script>
+
+    <script>
+    function doRegister() {
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPass').value;
+
+        fetch('/api/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ email, password })
+        })
+        .then(res => res.json())
+        .then(data => alert(data.status === 'success' ? 'Registration successful' : 'Registration failed'));
+    }
+
+    function doLogin() {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPass').value;
+
+        fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ email, password })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                localStorage.setItem('user', JSON.stringify(data.user));
+                document.getElementById('score').innerText = 'Your Score: ' + data.user.score;
+            } else {
+                alert('Login failed');
+            }
+        });
+    }
+
+    function saveScore(finalScore) {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) return;
+
+        fetch('/api/save-score', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user_id: user.id, score: finalScore })
+        });
+    }
+    </script>
+</body>
+</html>
